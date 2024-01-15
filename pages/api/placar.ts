@@ -4,29 +4,32 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import axios from 'axios';
 
 interface QueryParams {
-  pais?: string;
-  liga?: string;
+  country?: string;
+  league?: string;
 }
 
 const getPlacar = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { pais, liga }: QueryParams = req.query;
-  const api_key = 'MTM4NDEyXzE3MDUzMzIxMTRfOTk0NGEyZmM3NmY2YTRjYTVmY2FhODQ4NzA2NmVmYzllZWQ3MzU5ZA==';  // Substitua pela chave de API fornecida pela RapidAPI
+  const { country, league }: QueryParams = req.query;
+  const apiKey = '87002bfaeb67439ebfb3e258bb0139d1';  // Substitua pela chave de API fornecida pela Football Data API
 
   try {
-    if (!pais || !liga) {
+    if (!country || !league) {
       throw new Error('País e liga são obrigatórios.');
     }
 
-    // Você pode validar os valores de pais e liga aqui, se necessário
+    // Obter informações sobre a liga
+    const leagueResponse = await axios.get(
+      `https://api.football-data.org/v2/competitions/${country}/${league}`,
+      { headers: { 'X-Auth-Token': apiKey } }
+    );
 
-    const response = await axios.get('https://www.scorebat.com/video-api/v1/', {
-      params: {
-        key: api_key,
-        search: `${pais} ${liga}`,
-      },
-    });
+    // Obter partidas da liga
+    const matchesResponse = await axios.get(
+      `https://api.football-data.org/v2/competitions/${leagueResponse.data.id}/matches`,
+      { headers: { 'X-Auth-Token': apiKey } }
+    );
 
-    const placarJogos = response.data;
+    const placarJogos = matchesResponse.data;
 
     res.status(200).json(placarJogos);
   } catch (error) {
