@@ -8,9 +8,9 @@ interface QueryParams {
   liga?: string;
 }
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const getPlacar = async (req: NextApiRequest, res: NextApiResponse) => {
   const { pais, liga }: QueryParams = req.query;
-  const api_key = 'ef45e1f729msha20112503006f59p1a0dfcjsnbc025f0df781';  // Substitua pela chave de API fornecida pela RapidAPI
+  const api_key = 'MTM4NDEyXzE3MDUzMzIxMTRfOTk0NGEyZmM3NmY2YTRjYTVmY2FhODQ4NzA2NmVmYzllZWQ3MzU5ZA==';  // Substitua pela chave de API fornecida pela RapidAPI
 
   try {
     if (!pais || !liga) {
@@ -33,14 +33,13 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(error);
 
     if (error.response) {
-      // O servidor respondeu com um código de status diferente de 2xx
       res.status(error.response.status).json(error.response.data);
     } else if (error.message) {
-      // Erro local, como um parâmetro faltante ou inválido
       res.status(400).json({ error: error.message });
     } else {
-      // Outro tipo de erro
       res.status(500).json({ error: 'Erro ao obter o placar dos jogos.' });
     }
   }
 };
+
+export default getPlacar;
